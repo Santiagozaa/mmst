@@ -1,21 +1,12 @@
-FROM python:3.9-alpine
-
-RUN apk add --update --no-cache \
-    gcc \
-    musl-dev \
-    python3-dev \
-    libffi-dev \
-    openssl-dev
+FROM python:3.8-slim-buster
 
 WORKDIR /app
 
-COPY requirements.txt /app
+COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
 
-RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
+COPY . .
 
-COPY . /app
+CMD ["python3", "-u", "app.py"]
 
-EXPOSE 5000
-
-CMD [ "python", "app.py" ]
 
