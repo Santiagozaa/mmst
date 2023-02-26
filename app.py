@@ -1,3 +1,6 @@
+import os
+print(os.getcwd())
+
 from flask import Flask, request, jsonify
 import joblib
 
