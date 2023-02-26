@@ -1,34 +1,28 @@
-from flask import Flask, request
-import pandas as pd
-import numpy as np
-import pickle
-
-# Load the pickled model
-with open('model.pkl', 'rb') as f:
-    model = pickle.load(f)
+from flask import Flask, request, jsonify
+import joblib
 
 app = Flask(__name__)
+
+# Load the model
+model = joblib.load('model.pkl')
 
 @app.route('/')
 def home():
     return 'Hello, World!'
 
-@app.route('/predict')
+@app.route('/predict', methods=['POST'])
 def predict():
-    # Get the input values from the query string
-    age = int(request.args.get('age'))
-    sex = int(request.args.get('sex'))
-    bmi = float(request.args.get('bmi'))
-    children = int(request.args.get('children'))
-    smoker = int(request.args.get('smoker'))
-    region = int(request.args.get('region'))
+    # Get the features from the request
+    features = request.get_json()
 
-    # Make a prediction using the model
-    prediction = model.predict([[age, sex, bmi, children, smoker, region]])
+    # Make a prediction
+    prediction = model.predict(features)
 
-    # Return the prediction as JSON
-    return {'prediction': prediction[0]}
+    # Return the prediction as a JSON response
+    return jsonify({'prediction': prediction.tolist()})
+
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0')
+
 
